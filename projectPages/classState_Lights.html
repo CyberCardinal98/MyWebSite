@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stoplight Controller</title>
+    <!-- Include jQuery library for DOM manipulation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        /* Container styles */
+        .container {
+            display: flex;
+            flex-wrap: wrap; /* Allows stoplight units to wrap onto the next line */
+            gap: 20px; /* Spacing between each stoplight unit */
+            padding: 20px; /* Padding inside the container */
+        }
+
+        /* Individual stoplight unit style */
+        .stoplight-unit {
+            border: 1px solid #ccc; /* Light border around the stoplight unit */
+            padding: 15px; /* Padding inside each unit */
+            border-radius: 8px; /* Rounded corners for aesthetic effect */
+            text-align: center; /* Center-aligns content */
+            background: #f5f5f5; /* Light grey background for each unit */
+        }
+
+        /* Stoplight container box (background) style */
+        .stoplight {
+            width: 60px;
+            height: 140px;
+            background: #333; /* Dark background for the stoplight */
+            border-radius: 10px; /* Rounded edges */
+            padding: 10px;
+            margin: 10px auto; /* Centers the stoplight within its container */
+        }
+
+        /* Light circle styles (default state: inactive) */
+        .light {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%; /* Makes the lights circular */
+            background: #000; /* Default black color when inactive */
+            margin: 5px auto; /* Centers the light circles horizontally */
+            opacity: 0.3; /* Low opacity when inactive */
+        }
+
+        /* Active red light style */
+        .light.red.active {
+            background: #ff0000; /* Red when active */
+            opacity: 1; /* Full opacity when active */
+            box-shadow: 0 0 20px #ff0000; /* Glow effect for active red light */
+        }
+
+        /* Active green light style */
+        .light.green.active {
+            background: #00ff00; /* Green when active */
+            opacity: 1; /* Full opacity when active */
+            box-shadow: 0 0 20px #00ff00; /* Glow effect for active green light */
+        }
+
+        /* Toggle switch styles */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc; /* Default background color */
+            transition: .4s;
+            border-radius: 34px; /* Rounded edges of the slider */
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white; /* White knob */
+            transition: .4s;
+            border-radius: 50%; /* Circular knob */
+        }
+
+        input:checked + .slider {
+            background-color: #2196F3; /* Blue when the switch is toggled on */
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px); /* Moves the knob when the switch is on */
+        }
+    </style>
+</head>
+<body>
+    <!-- Container for stoplight units -->
+    <div class="container" id="stoplightContainer"></div>
+
+    <script>
+        const stoplights = {};
+        // Define the Stoplight class to represent individual stoplight units
+        class Stoplight {
+            constructor(id){
+                this.id = id;
+                this.running = false;
+                this.interval = null;
+                this.createStoplightElement();
+                stoplights[this.id] = this;
+                this.loadState();
+            }
+
+            // Method to create the HTML structure for a stoplight unit
+            createStoplightElement() {
+                const stoplightHtml = `
+                    <label class="switch">
+                        <input type="checkbox" id="toggle${this.id}">
+                        <span class="slider"></span>
+                    </label>
+                    <div class="stoplight">
+                        <div class="light red" id="red${this.id}"></div>
+                        <div class="light yellow" id="yellow${this.id}"></div>
+                        <div class="light green" id="green${this.id}"></div>
+                    </div>
+                    
+                `;
+
+                $('#stoplightContainer').append(stoplightHtml);
+
+                $(`#toggle${this.id}`).on('change', (e) => {
+                    console.log("testing")
+                    if(e.target.checked){
+                        this.start();
+                    } else {
+                        this.stop();
+                    }
+                });
+
+                $(`toggle${this.id}`).prop('checked', this.running);
+            }
+
+            // Method to start the stoplight's light-changing cycle
+            start() {
+                if(!this.running){
+                    console.log(`starting stoplight ${this.id}`);
+                    this.running = true;
+                    this.updateState();
+                    this.interval = setInterval(() => {
+                        this.toggleLight();
+                    }, 5000);
+                    this.clearLights();
+                    $('#red' + this.id).addClass('active');
+                }
+            }
+
+            // Method to stop the stoplight's light-changing cycle
+            stop() {
+                if(this.running){
+                    console.log(`stopping stoplight ${this.id}`);
+                    this.running = false;
+                    this.clearLights();
+                    clearInterval(this.interval);
+                    this.updateState();
+                }
+            }
+
+            // Toggle the stoplight between running and stopped states
+            toggleStoplight() {
+               if(this.running){
+                this.stop();
+               } else {
+                this.start();
+               }
+            }
+
+            // Method to change the color of the stoplight (red <-> green)
+            toggleLight() {
+                if($('#red' + this.id).hasClass('active')){
+                    this.clearLights();
+                    $('#green' + this.id).addClass('active');
+                } else if($('#green' + this.id).hasClass('active')){
+                    this.clearLights();
+                    $('#red' + this.id).addClass('active');
+                }
+            }
+
+            // Method to turn off all the lights (reset state)
+            clearLights() {
+                $('#red' + this.id).removeClass('active');
+                $('#yellow' + this.id).removeClass('active');
+                $('#green' + this.id).removeClass('active');
+            }
+
+            // Method to update and save the current state of the stoplight
+            updateState() {
+                localStorage.setItem(`stoplight${this.id}_state`, JSON.stringify({
+                    running: this.running,
+                    red: $('#red' + this.id).hasClass('active'),
+                    green: $('#green' + this.id).hasClass('active')
+                }));
+            }
+
+            // Method to load the previously saved state from localStorage
+            loadState() {
+                const savedState = JSON.parse(localStorage.getItem(`stoplight${this.id}_state`));
+                if(savedState) {
+                    this.running = savedState.running;
+                    if(this.running){
+                        this.start();
+                    }
+                    if(savedState.red){
+                        $('#red' + this.id).addClass('active');
+                    }
+                    if(savedState.green){
+                        $('#green' + this.id).addClass('active');
+                    }
+                }
+            }
+        }
+
+        // Create 6 stoplights when the page loads
+        $(document).ready(() => {
+            
+            console.log(" Waluigi")
+
+            for (let i = 1; i <= 6; i++) {
+                new Stoplight(i); // Create and initialize stoplight instances
+            }
+
+            $('body').on('change', 'input[type="checkbox"]', function(e) {
+                const stoplightID = $(this).attr('id').replace('toggle', '');
+                console.log(`checkbox ${stoplightID} clicked!`);
+                const stoplight = stoplights[stoplightID];
+                if(stoplight){
+                    console.log(`Toggled stoplight ${stoplightID}:`, e.target.checked);
+                    if(e.target.checked){
+                        stoplight.start();
+                    } else {
+                        stoplight.stop();
+                    }
+                } else{
+                    console.error(`stoplight ${stoplightID} not defined`);
+                }
+                
+            });
+
+            
+        });
+    </script>
+</body>
+</html>

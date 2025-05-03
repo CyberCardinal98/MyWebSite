@@ -1,0 +1,28 @@
+#pageHeader{
+    width:100%;
+    height:70px;
+    background-color: rgb(65, 77, 88);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+#entryContainer{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 500px;
+    align-items: center;
+    justify-content: center;
+}
+
+#submitBtn{
+    height: 30px;
+    width:80px;
+    border-radius: 5px;
+    background-color: rgb(65, 77, 88);
+    border: none;
+    justify-content: center;
+    align-items: center;
+}

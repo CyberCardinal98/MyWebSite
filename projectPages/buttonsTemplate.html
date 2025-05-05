@@ -13,9 +13,21 @@
       font-family: Arial, sans-serif;
     }
 
-    /* Body Styling */
-    body {
+    body{
       display: flex;
+      flex-direction: column;
+      background-color: #f0f2f5;
+      color: #333
+    }
+
+    body a{
+      margin-top: 20px;
+    }
+
+    /* Body Styling */
+    body main {
+      display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
@@ -59,55 +71,57 @@
   </style>
 </head>
 <body>
+  <a href="../projects.html">&larr; Go Back to Main Project Page</a>
+  <main>
+    <div class="container">
 
-  <div class="container">
+      <!-- Group 1: ID Selector -->
+      <section>
+        <h2>Group 1: ID Selector</h2>
+        <button id="button1">ID Button</button>
+      </section>
 
-    <!-- Group 1: ID Selector -->
-    <section>
-      <h2>Group 1: ID Selector</h2>
-      <button id="button1">ID Button</button>
-    </section>
+      <!-- Group 2: Class Selector -->
+      <section>
+        <h2>Group 2: Class Selector</h2>
+        <button class="group2">Class Button 1</button>
+        <button class="group2">Class Button 2</button>
+        <button class="group2">Class Button 3</button>
+      </section>
 
-    <!-- Group 2: Class Selector -->
-    <section>
-      <h2>Group 2: Class Selector</h2>
-      <button class="group2">Class Button 1</button>
-      <button class="group2">Class Button 2</button>
-      <button class="group2">Class Button 3</button>
-    </section>
+      <!-- Group 3: Every Other -->
+      <section>
+        <h2>Group 3: Every Other</h2>
+        <button class="group3">Button 1</button>
+        <button class="group3">Button 2</button>
+        <button class="group3">Button 3</button>
+        <button class="group3">Button 4</button>
+        <button class="group3">Button 5</button>
+        <button class="group3">Button 6</button>
+        <button class="group3">Button 7</button>
+        <button class="group3">Button 8</button>
+      </section>
 
-    <!-- Group 3: Every Other -->
-    <section>
-      <h2>Group 3: Every Other</h2>
-      <button class="group3">Button 1</button>
-      <button class="group3">Button 2</button>
-      <button class="group3">Button 3</button>
-      <button class="group3">Button 4</button>
-      <button class="group3">Button 5</button>
-      <button class="group3">Button 6</button>
-      <button class="group3">Button 7</button>
-      <button class="group3">Button 8</button>
-    </section>
+      <!-- Group 4: Dynamic Buttons -->
+      <section>
+        <h2>Group 4: Dynamic Buttons</h2>
+        <div id="dynamic-buttons-container"></div>
+      </section>
 
-    <!-- Group 4: Dynamic Buttons -->
-    <section>
-      <h2>Group 4: Dynamic Buttons</h2>
-      <div id="dynamic-buttons-container"></div>
-    </section>
+      <!-- Group 5: Div with ID and Buttons Inside -->
+      <section>
+        <h2>Group 5: Div with ID and Buttons Inside</h2>
+        <div id="group5-container">
+          <button>Button 1</button>
+          <button>Button 2</button>
+          <button>Button 3</button>
+          <button>Button 4</button>
+          <button>Button 5</button>
+        </div>
+      </section>
 
-    <!-- Group 5: Div with ID and Buttons Inside -->
-    <section>
-      <h2>Group 5: Div with ID and Buttons Inside</h2>
-      <div id="group5-container">
-        <button>Button 1</button>
-        <button>Button 2</button>
-        <button>Button 3</button>
-        <button>Button 4</button>
-        <button>Button 5</button>
-      </div>
-    </section>
-
-  </div>
+    </div>
+  </main>
 
   <script>
     //hint: this.style.backgroundColor = getRandomColor();

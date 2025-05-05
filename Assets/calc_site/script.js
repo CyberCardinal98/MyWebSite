@@ -1,6 +1,9 @@
 //Global varible to hold our current math problem
 let mathProblem = "";
 
+//global array var to hold all calcs
+let history = [];
+
 //event listner that listens for any click on the page
 document.addEventListener("click", (event) => {
     let itemThatWasClick = event.target
@@ -44,13 +47,57 @@ function updateCurrentProblem(current){
 
 //function to do the math for the math problem, after that is done clear the label for the problem and the global var
 function updateAnswer(){
+    try {
+        const result = safeEvaluate(mathProblem);
 
-    //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval
-    //In normal circumstances eval is evil, can you think of a different way to make this calculator with out it?
-    //eval is a funciton that takes in a string and evaulates it as a valid javascript expression
-    //EX eval("2+2") will return 4
-    //this also mean if their is any valid js code is passed to eval, it will run it. this is a security risk
+        // Add the calculation to history
+        history.push(`${mathProblem} = ${result}`);
 
-    document.getElementById("solution").textContent = eval(mathProblem)
-    clearEverything()
+        // Render updated history
+        renderHistory();
+
+        // Show result
+        document.getElementById("solution").textContent = result;
+
+        // Clear the equation display
+        clearEverything();
+    } catch (e) {
+        document.getElementById("solution").textContent = "Error";
+        console.error("Evaluation error:", e.message);
+    }
+}
+
+
+function safeEvaluate(mathProblem){
+    if (!/^[\d+\-*/ ().]+$/.test(mathProblem)) {
+        throw new Error("Invalid characters in expression.");
+    }
+
+    // Use Function constructor for isolated evaluation
+    return Function(`"use strict"; return (${mathProblem})`)();
+}
+
+function renderHistory() {
+    const container = document.getElementById("calcHistoryDisplay");
+    container.innerHTML = ""; // Clear previous content
+
+    const list = document.createElement("ul");
+    list.classList.add("list-group");
+
+    history.forEach(entry => {
+        const li = document.createElement("li");
+        li.classList.add("list-group-item");
+        li.textContent = entry;
+
+        // Allow clicking a history item to reuse the equation
+        li.addEventListener("click", () => {
+            const equation = entry.split("=")[0].trim();
+            mathProblem = equation;
+            updateCurrentProblem(mathProblem);
+        });
+
+        list.appendChild(li);
+    });
+
+    container.appendChild(list);
 }
